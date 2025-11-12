@@ -1,0 +1,17 @@
+{{- if and .Values.components.eip.enabled .Values.eipOperator.webhook.enabled .Values.eipOperator.webhook.certManager.enabled }}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: eip-operator-serving-cert
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "eip-operator.labels" . | nindent 4 }}
+spec:
+  dnsNames:
+  - eip-operator-webhook-service.{{ .Values.global.namespace }}.svc
+  - eip-operator-webhook-service.{{ .Values.global.namespace }}.svc.cluster.local
+  issuerRef:
+    kind: {{ .Values.eipOperator.webhook.certManager.issuerKind }}
+    name: {{ .Values.eipOperator.webhook.certManager.issuerName }}
+  secretName: {{ .Values.eipOperator.webhook.certificate.secretName }}
+{{- end }}

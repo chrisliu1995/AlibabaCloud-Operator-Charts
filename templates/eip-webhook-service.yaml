@@ -1,0 +1,16 @@
+{{- if and .Values.components.eip.enabled .Values.eipOperator.webhook.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: eip-operator-webhook-service
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "eip-operator.labels" . | nindent 4 }}
+spec:
+  ports:
+  - port: {{ .Values.eipOperator.webhook.port }}
+    protocol: TCP
+    targetPort: 9443
+  selector:
+    {{- include "eip-operator.selectorLabels" . | nindent 4 }}
+{{- end }}

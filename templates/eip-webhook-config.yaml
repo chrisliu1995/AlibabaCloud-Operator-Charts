@@ -1,0 +1,33 @@
+{{- if and .Values.components.eip.enabled .Values.eipOperator.webhook.enabled }}
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: eip-operator-validating-webhook-configuration
+  labels:
+    {{- include "eip-operator.labels" . | nindent 4 }}
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: eip-operator-webhook-service
+      namespace: {{ .Values.global.namespace }}
+      path: /validate-eip-alibabacloud-com-v1alpha1-eip
+      port: 9443
+    caBundle: ""
+  failurePolicy: Fail
+  name: veip.kb.io
+  rules:
+  - apiGroups:
+    - eip.alibabacloud.com
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - eips
+    scope: '*'
+  sideEffects: None
+  timeoutSeconds: 10
+{{- end }}

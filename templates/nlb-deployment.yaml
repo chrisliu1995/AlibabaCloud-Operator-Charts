@@ -1,0 +1,87 @@
+{{- if .Values.components.nlb.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nlb-operator
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "nlb-operator.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.nlbOperator.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "nlb-operator.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "nlb-operator.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "nlb-operator.serviceAccountName" . }}
+      containers:
+      - name: manager
+        image: "{{ .Values.global.imageRegistry }}/{{ .Values.nlbOperator.image.repository }}:{{ .Values.nlbOperator.image.tag }}"
+        imagePullPolicy: {{ .Values.nlbOperator.image.pullPolicy }}
+        command:
+        - /manager
+        args:
+        - --leader-elect
+        {{- if .Values.nlbOperator.controller.maxConcurrentReconciles }}
+        - --max-concurrent-reconciles={{ .Values.nlbOperator.controller.maxConcurrentReconciles }}
+        {{- end }}
+        {{- range .Values.nlbOperator.extraArgs }}
+        - {{ . }}
+        {{- end }}
+        env:
+        - name: ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "nlb-operator.serviceAccountName" . }}-credentials
+              key: access-key-id
+        - name: ACCESS_KEY_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "nlb-operator.serviceAccountName" . }}-credentials
+              key: access-key-secret
+        - name: REGION_ID
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "nlb-operator.serviceAccountName" . }}-credentials
+              key: region
+        {{- range .Values.nlbOperator.env }}
+        - name: {{ .name }}
+          value: {{ .value | quote }}
+        {{- end }}
+        {{- if .Values.nlbOperator.livenessProbe }}
+        livenessProbe:
+          {{- toYaml .Values.nlbOperator.livenessProbe | nindent 10 }}
+        {{- end }}
+        {{- if .Values.nlbOperator.readinessProbe }}
+        readinessProbe:
+          {{- toYaml .Values.nlbOperator.readinessProbe | nindent 10 }}
+        {{- end }}
+        resources:
+          {{- toYaml .Values.nlbOperator.resources | nindent 10 }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+      securityContext:
+        runAsNonRoot: true
+      {{- with .Values.nlbOperator.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nlbOperator.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nlbOperator.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

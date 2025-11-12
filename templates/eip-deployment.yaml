@@ -1,0 +1,102 @@
+{{- if .Values.components.eip.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eip-operator
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "eip-operator.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.eipOperator.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "eip-operator.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "eip-operator.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "eip-operator.serviceAccountName" . }}
+      containers:
+      - name: manager
+        image: "{{ .Values.global.imageRegistry }}/{{ .Values.eipOperator.image.repository }}:{{ .Values.eipOperator.image.tag }}"
+        imagePullPolicy: {{ .Values.eipOperator.image.pullPolicy }}
+        command:
+        - /manager
+        args:
+        - --leader-elect
+        {{- range .Values.eipOperator.extraArgs }}
+        - {{ . }}
+        {{- end }}
+        {{- range .Values.eipOperator.env }}
+        env:
+        - name: {{ .name }}
+          value: {{ .value | quote }}
+        {{- end }}
+        {{- if .Values.eipOperator.livenessProbe }}
+        livenessProbe:
+          {{- toYaml .Values.eipOperator.livenessProbe | nindent 10 }}
+        {{- end }}
+        {{- if .Values.eipOperator.readinessProbe }}
+        readinessProbe:
+          {{- toYaml .Values.eipOperator.readinessProbe | nindent 10 }}
+        {{- end }}
+        resources:
+          {{- toYaml .Values.eipOperator.resources | nindent 10 }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        {{- if .Values.eipOperator.webhook.enabled }}
+        volumeMounts:
+        - mountPath: /tmp/k8s-webhook-server/serving-certs
+          name: cert
+          readOnly: true
+        - mountPath: /etc/config
+          name: config
+          readOnly: true
+        - mountPath: /etc/credential
+          name: credential
+          readOnly: true
+        {{- else }}
+        volumeMounts:
+        - mountPath: /etc/config
+          name: config
+          readOnly: true
+        - mountPath: /etc/credential
+          name: credential
+          readOnly: true
+        {{- end }}
+      volumes:
+      - name: config
+        configMap:
+          name: eip-operator-config
+      - name: credential
+        secret:
+          secretName: eip-operator-credential
+      {{- if .Values.eipOperator.webhook.enabled }}
+      - name: cert
+        secret:
+          defaultMode: 420
+          secretName: {{ .Values.eipOperator.webhook.certificate.secretName }}
+      {{- end }}
+      securityContext:
+        runAsNonRoot: true
+      {{- with .Values.eipOperator.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.eipOperator.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.eipOperator.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

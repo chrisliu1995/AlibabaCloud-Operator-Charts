@@ -1,0 +1,18 @@
+apiVersion: v2
+name: alibabacloud-operators
+description: A Helm chart for installing AlibabaCloud NLB and EIP Operators
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - alibabacloud
+  - nlb
+  - eip
+  - operator
+  - kubernetes
+maintainers:
+  - name: Chris Liu
+    url: https://github.com/chrisliu1995
+sources:
+  - https://github.com/chrisliu1995/AlibabaCloud-NLB-Operator
+  - https://github.com/chrisliu1995/AlibabaCloud-EIP-Operator

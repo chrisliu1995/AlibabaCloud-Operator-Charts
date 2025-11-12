@@ -1,0 +1,11 @@
+{{- if and .Values.components.eip.enabled .Values.eipOperator.webhook.enabled .Values.eipOperator.webhook.certManager.enabled }}
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: selfsigned-issuer
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "alibabacloud-operators.labels" . | nindent 4 }}
+spec:
+  selfSigned: {}
+{{- end }}

@@ -1,0 +1,54 @@
+========================================================================
+  AlibabaCloud Operators Chart has been installed successfully!
+========================================================================
+
+Installed CRDs:
+  ✓ eips.eip.alibabacloud.com
+  ✓ nlbs.nlboperator.alibabacloud.com
+
+Installed components:
+{{- if .Values.components.nlb.enabled }}
+  ✓ NLB Operator
+{{- end }}
+{{- if .Values.components.eip.enabled }}
+  ✓ EIP Operator
+{{- end }}
+
+Namespace: {{ .Values.global.namespace }}
+Region: {{ .Values.global.alibabacloud.region }}
+
+{{- if .Values.components.nlb.enabled }}
+
+NLB Operator:
+  Deployment: nlb-operator
+  ServiceAccount: {{ include "nlb-operator.serviceAccountName" . }}
+  Replicas: {{ .Values.nlbOperator.replicaCount }}
+  
+  Check status:
+    kubectl get deployment nlb-operator -n {{ .Values.global.namespace }}
+    kubectl logs -l app.kubernetes.io/name=nlb-operator -n {{ .Values.global.namespace }}
+{{- end }}
+
+{{- if .Values.components.eip.enabled }}
+
+EIP Operator:
+  Deployment: eip-operator
+  ServiceAccount: {{ include "eip-operator.serviceAccountName" . }}
+  Replicas: {{ .Values.eipOperator.replicaCount }}
+  
+  Check status:
+    kubectl get deployment eip-operator -n {{ .Values.global.namespace }}
+    kubectl logs -l app.kubernetes.io/name=eip-operator -n {{ .Values.global.namespace }}
+{{- end }}
+
+Configuration:
+  To update credentials or configuration, modify your values.yaml and run:
+    helm upgrade {{ .Release.Name }} alibabacloud-operators -f values.yaml
+
+  To disable a component, set components.<component>.enabled to false
+
+Documentation:
+  NLB Operator: https://github.com/chrisliu1995/AlibabaCloud-NLB-Operator
+  EIP Operator: https://github.com/chrisliu1995/AlibabaCloud-EIP-Operator
+
+========================================================================

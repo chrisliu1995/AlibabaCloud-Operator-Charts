@@ -1,0 +1,22 @@
+# 示例：仅安装 EIP Operator
+global:
+  alibabacloud:
+    accessKeyId: "your-access-key-id"
+    accessKeySecret: "your-access-key-secret"
+    region: "cn-shanghai"
+
+components:
+  nlb:
+    enabled: false
+  eip:
+    enabled: true
+
+eipOperator:
+  replicaCount: 2
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 200m
+      memory: 256Mi

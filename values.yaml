@@ -1,0 +1,158 @@
+# 全局配置
+global:
+  # AlibabaCloud 认证配置
+  alibabacloud:
+    # AccessKey ID
+    accessKeyId: ""
+    # AccessKey Secret
+    accessKeySecret: ""
+    # 区域
+    region: "cn-hangzhou"
+  
+  # 镜像拉取配置
+  imagePullSecrets: []
+  
+  # 镜像仓库配置
+  imageRegistry: "registry.cn-beijing.aliyuncs.com"
+  
+  # 命名空间
+  namespace: "alibabacloud-operators-system"
+
+# 组件启用控制
+components:
+  # 是否启用 NLB Operator
+  nlb:
+    enabled: true
+  # 是否启用 EIP Operator
+  eip:
+    enabled: true
+
+# NLB Operator 配置
+nlbOperator:
+  # 副本数
+  replicaCount: 1
+  
+  # 镜像配置
+  image:
+    repository: chrisliu95/alibabacloud-nlb-operator
+    tag: "v0.1.0"
+    pullPolicy: IfNotPresent
+  
+  # 资源限制
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  
+  # 节点选择器
+  nodeSelector: {}
+  
+  # 容忍度
+  tolerations: []
+  
+  # 亲和性
+  affinity: {}
+  
+  # ServiceAccount 配置
+  serviceAccount:
+    create: true
+    name: "nlb-operator"
+    annotations: {}
+  
+  # 健康检查配置
+  livenessProbe:
+    httpGet:
+      path: /healthz
+      port: 8081
+    initialDelaySeconds: 15
+    periodSeconds: 20
+  
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: 8081
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  
+  # 环境变量
+  env: []
+  
+  # 控制器配置
+  controller:
+    # 最大并发协调数
+    maxConcurrentReconciles: 5
+  
+  # 额外的配置
+  extraArgs: []
+
+# EIP Operator 配置
+eipOperator:
+  # 副本数
+  replicaCount: 1
+  
+  # 镜像配置
+  image:
+    repository: chrisliu95/alibabacloud-eip-operator
+    tag: "v0.1.0"
+    pullPolicy: IfNotPresent
+  
+  # 资源限制
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  
+  # 节点选择器
+  nodeSelector: {}
+  
+  # 容忍度
+  tolerations: []
+  
+  # 亲和性
+  affinity: {}
+  
+  # ServiceAccount 配置
+  serviceAccount:
+    create: true
+    name: "eip-operator"
+    annotations: {}
+  
+  # 健康检查配置
+  livenessProbe:
+    httpGet:
+      path: /healthz
+      port: 8081
+    initialDelaySeconds: 15
+    periodSeconds: 20
+  
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: 8081
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  
+  # 环境变量
+  env: []
+  
+  # 额外的配置
+  extraArgs: []
+  
+  # Webhook 配置
+  webhook:
+    enabled: true
+    port: 9443
+    # 证书管理方式: manual（默认）或 cert-manager（备用）
+    certManager:
+      enabled: false  # 默认使用手动证书生成
+      issuerName: "selfsigned-issuer"
+      issuerKind: "Issuer"
+    # 手动证书配置（默认方案）
+    certificate:
+      secretName: "eip-operator-webhook-cert"

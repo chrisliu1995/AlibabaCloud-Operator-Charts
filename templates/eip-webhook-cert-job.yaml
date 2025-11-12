@@ -1,0 +1,31 @@
+{{- if and .Values.components.eip.enabled .Values.eipOperator.webhook.enabled (not .Values.eipOperator.webhook.certManager.enabled) }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: eip-operator-webhook-cert-generator
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "eip-operator.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  template:
+    metadata:
+      name: eip-operator-webhook-cert-generator
+    spec:
+      serviceAccountName: {{ include "eip-operator.serviceAccountName" . }}
+      restartPolicy: OnFailure
+      containers:
+      - name: create
+        image: registry.cn-hangzhou.aliyuncs.com/google_containers/kube-webhook-certgen:v1.3.0
+        imagePullPolicy: IfNotPresent
+        args:
+        - create
+        - --host=eip-operator-webhook-service,eip-operator-webhook-service.{{ .Values.global.namespace }}.svc
+        - --namespace={{ .Values.global.namespace }}
+        - --secret-name={{ .Values.eipOperator.webhook.certificate.secretName }}
+        - --cert-name=tls.crt
+        - --key-name=tls.key
+{{- end }}

@@ -1,0 +1,30 @@
+# Helm Chart artifacts
+*.tgz
+*.lock
+
+# Test outputs
+/tmp/
+test-*.yaml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets (never commit these!)
+*-credentials.yaml
+secrets.yaml
+my-values.yaml
+production-values.yaml
+dev-values.yaml
+
+# Backup files
+*.bak
+*.backup
+backup-values.yaml

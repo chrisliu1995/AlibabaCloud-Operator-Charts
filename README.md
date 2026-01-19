@@ -91,7 +91,7 @@ helm install alibabacloud-operators . \
 |------|------|--------|
 | `nlbOperator.replicaCount` | 副本数 | `1` |
 | `nlbOperator.image.repository` | 镜像仓库 | `chrisliu1995/alibabacloud-nlb-operator` |
-| `nlbOperator.image.tag` | 镜像标签 | `"latest"` |
+| `nlbOperator.image.tag` | 镜像标签 | `"v0.1.0"` |
 | `nlbOperator.image.pullPolicy` | 镜像拉取策略 | `IfNotPresent` |
 | `nlbOperator.resources.limits.cpu` | CPU 限制 | `500m` |
 | `nlbOperator.resources.limits.memory` | 内存限制 | `512Mi` |
@@ -109,7 +109,7 @@ helm install alibabacloud-operators . \
 |------|------|--------|
 | `eipOperator.replicaCount` | 副本数 | `1` |
 | `eipOperator.image.repository` | 镜像仓库 | `chrisliu1995/alibabacloud-eip-operator` |
-| `eipOperator.image.tag` | 镜像标签 | `"latest"` |
+| `eipOperator.image.tag` | 镜像标签 | `"v0.2.0"` |
 | `eipOperator.image.pullPolicy` | 镜像拉取策略 | `IfNotPresent` |
 | `eipOperator.resources.limits.cpu` | CPU 限制 | `500m` |
 | `eipOperator.resources.limits.memory` | 内存限制 | `512Mi` |

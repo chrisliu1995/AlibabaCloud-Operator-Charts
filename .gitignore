@@ -23,6 +23,7 @@ secrets.yaml
 my-values.yaml
 production-values.yaml
 dev-values.yaml
+values-local.yaml
 
 # Backup files
 *.bak

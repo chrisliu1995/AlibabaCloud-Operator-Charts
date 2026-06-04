@@ -71,6 +71,12 @@ rules:
   - nlbs
   - nlbs/status
   - nlbs/finalizers
+  - servergroups
+  - servergroups/status
+  - servergroups/finalizers
+  - listeners
+  - listeners/status
+  - listeners/finalizers
   verbs:
   - get
   - list

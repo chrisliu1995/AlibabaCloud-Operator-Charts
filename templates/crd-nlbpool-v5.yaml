@@ -1,0 +1,130 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: nlbpools.nlbpool.alibabacloud.com
+spec:
+  group: nlbpool.alibabacloud.com
+  names:
+    kind: NLBPool
+    listKind: NLBPoolList
+    plural: nlbpools
+    singular: nlbpool
+  scope: Namespaced
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+      subresources:
+        status: {}
+      additionalPrinterColumns:
+        - name: Phase
+          type: string
+          jsonPath: .status.phase
+        - name: Total
+          type: integer
+          jsonPath: .status.totalSlots
+        - name: Available
+          type: integer
+          jsonPath: .status.availableSlots
+        - name: Bound
+          type: integer
+          jsonPath: .status.boundSlots
+        - name: Age
+          type: date
+          jsonPath: .metadata.creationTimestamp
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            apiVersion:
+              type: string
+            kind:
+              type: string
+            metadata:
+              type: object
+            spec:
+              type: object
+              properties:
+                region:
+                  type: string
+                vpcId:
+                  type: string
+                zoneMaps:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      zone:
+                        type: string
+                      vswitchId:
+                        type: string
+                lanes:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      ispType:
+                        type: string
+                ports:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      protocol:
+                        type: string
+                portRange:
+                  type: object
+                  properties:
+                    min:
+                      type: integer
+                      format: int32
+                    max:
+                      type: integer
+                      format: int32
+                slotsPerNLB:
+                  type: integer
+                  format: int32
+                minAvailableNLBs:
+                  type: integer
+                  format: int32
+                healthCheck:
+                  type: object
+                  properties:
+                    enabled:
+                      type: boolean
+            status:
+              type: object
+              properties:
+                phase:
+                  type: string
+                lanes:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      nlbId:
+                        type: string
+                      eip:
+                        type: string
+                      ready:
+                        type: boolean
+                nlbsPerLane:
+                  type: integer
+                  format: int32
+                totalSlots:
+                  type: integer
+                  format: int32
+                availableSlots:
+                  type: integer
+                  format: int32
+                boundSlots:
+                  type: integer
+                  format: int32
+                message:
+                  type: string

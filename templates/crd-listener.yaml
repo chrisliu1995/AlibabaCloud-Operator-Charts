@@ -1,0 +1,84 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: listeners.nlboperator.alibabacloud.com
+spec:
+  group: nlboperator.alibabacloud.com
+  names:
+    kind: Listener
+    listKind: ListenerList
+    plural: listeners
+    singular: listener
+    shortNames:
+      - lsn
+  scope: Namespaced
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      subresources:
+        status: {}
+      additionalPrinterColumns:
+        - name: Phase
+          type: string
+          jsonPath: .status.phase
+        - name: Port
+          type: integer
+          jsonPath: .spec.listenerPort
+        - name: Protocol
+          type: string
+          jsonPath: .spec.listenerProtocol
+        - name: ListenerId
+          type: string
+          jsonPath: .status.listenerId
+        - name: Age
+          type: date
+          jsonPath: .metadata.creationTimestamp
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            apiVersion:
+              type: string
+            kind:
+              type: string
+            metadata:
+              type: object
+            spec:
+              type: object
+              required:
+                - region
+                - loadBalancerRef
+                - listenerPort
+                - listenerProtocol
+                - serverGroupRef
+              properties:
+                region:
+                  type: string
+                loadBalancerRef:
+                  type: string
+                  description: Reference to NLB CR name in same namespace
+                listenerPort:
+                  type: integer
+                  format: int32
+                  minimum: 1
+                  maximum: 65535
+                listenerProtocol:
+                  type: string
+                  enum:
+                    - TCP
+                    - UDP
+                    - TCPSSL
+                serverGroupRef:
+                  type: string
+                  description: Reference to ServerGroup CR name (cross-NLB shared)
+            status:
+              type: object
+              properties:
+                listenerId:
+                  type: string
+                phase:
+                  type: string
+                message:
+                  type: string

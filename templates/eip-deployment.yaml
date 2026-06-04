@@ -23,7 +23,7 @@ spec:
       serviceAccountName: {{ include "eip-operator.serviceAccountName" . }}
       containers:
       - name: manager
-        image: "{{ .Values.global.imageRegistry }}/{{ .Values.eipOperator.image.repository }}:{{ .Values.eipOperator.image.tag }}"
+        image: "{{ .Values.eipOperator.image.registry | default .Values.global.imageRegistry }}/{{ .Values.eipOperator.image.repository }}:{{ .Values.eipOperator.image.tag }}"
         imagePullPolicy: {{ .Values.eipOperator.image.pullPolicy }}
         command:
         - /manager

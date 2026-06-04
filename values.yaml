@@ -26,6 +26,9 @@ components:
   # 是否启用 EIP Operator
   eip:
     enabled: true
+  # 是否启用 NLB Pool Operator
+  nlbPool:
+    enabled: true
 
 # NLB Operator 配置
 nlbOperator:
@@ -34,8 +37,9 @@ nlbOperator:
   
   # 镜像配置
   image:
-    repository: chrisliu95/alibabacloud-nlb-operator
-    tag: "v0.1.0"
+    registry: "registry.cn-hangzhou.aliyuncs.com"
+    repository: chrisliu/nlb-operator
+    tag: "v0.2.0"
     pullPolicy: IfNotPresent
   
   # 资源限制
@@ -96,7 +100,7 @@ eipOperator:
   # 镜像配置
   image:
     repository: chrisliu95/alibabacloud-eip-operator
-    tag: "v0.2.0"
+    tag: "v0.2.1"
     pullPolicy: IfNotPresent
   
   # 资源限制
@@ -156,3 +160,73 @@ eipOperator:
     # 手动证书配置（默认方案）
     certificate:
       secretName: "eip-operator-webhook-cert"
+
+# NLB Pool Operator 配置
+nlbPoolOperator:
+  # 副本数
+  replicaCount: 1
+
+  # 镜像配置
+  image:
+    registry: "registry.cn-hangzhou.aliyuncs.com"
+    repository: chrisliu/nlb-pool-operator
+    tag: "v0.2.0"
+    pullPolicy: IfNotPresent
+
+  # 资源限制
+  resources:
+    limits:
+      cpu: "2"
+      memory: 4Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi
+
+  # 节点选择器
+  nodeSelector: {}
+
+  # 容忍度
+  tolerations: []
+
+  # 亲和性
+  affinity: {}
+
+  # ServiceAccount 配置
+  serviceAccount:
+    create: true
+    name: "nlb-pool-operator"
+    annotations: {}
+
+  # 健康检查配置
+  livenessProbe:
+    httpGet:
+      path: /healthz
+      port: 8081
+    initialDelaySeconds: 15
+    periodSeconds: 20
+
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: 8081
+    initialDelaySeconds: 5
+    periodSeconds: 10
+
+  # 环境变量
+  env: []
+
+  # 控制器配置
+  controller:
+    # NLB API QPS 限制
+    nlbApiQps: "3.0"
+    # NLB API Burst 限制
+    nlbApiBurst: "5"
+    # 最大并发协调数
+    maxConcurrentReconciles: 100
+    # kube-apiserver 客户端 QPS 限制
+    kubeApiQps: 50
+    # kube-apiserver 客户端 Burst 限制
+    kubeApiBurst: 100
+
+  # 额外的配置
+  extraArgs: []

@@ -113,6 +113,38 @@ EIP Operator ServiceAccount name
 {{- end }}
 
 {{/*
+NLB Pool Operator labels
+*/}}
+{{- define "nlb-pool-operator.labels" -}}
+helm.sh/chart: {{ include "alibabacloud-operators.chart" . }}
+{{ include "nlb-pool-operator.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+app.kubernetes.io/component: nlb-pool-operator
+{{- end }}
+
+{{/*
+NLB Pool Operator selector labels
+*/}}
+{{- define "nlb-pool-operator.selectorLabels" -}}
+app.kubernetes.io/name: nlb-pool-operator
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+NLB Pool Operator ServiceAccount name
+*/}}
+{{- define "nlb-pool-operator.serviceAccountName" -}}
+{{- if .Values.nlbPoolOperator.serviceAccount.create }}
+{{- default "nlb-pool-operator" .Values.nlbPoolOperator.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.nlbPoolOperator.serviceAccount.name }}
+{{- end }}
+{{- end }}
+
+{{/*
 Image registry
 */}}
 {{- define "alibabacloud-operators.imageRegistry" -}}

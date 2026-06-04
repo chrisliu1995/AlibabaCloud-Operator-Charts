@@ -23,7 +23,7 @@ spec:
       serviceAccountName: {{ include "nlb-operator.serviceAccountName" . }}
       containers:
       - name: manager
-        image: "{{ .Values.global.imageRegistry }}/{{ .Values.nlbOperator.image.repository }}:{{ .Values.nlbOperator.image.tag }}"
+        image: "{{ .Values.nlbOperator.image.registry | default .Values.global.imageRegistry }}/{{ .Values.nlbOperator.image.repository }}:{{ .Values.nlbOperator.image.tag }}"
         imagePullPolicy: {{ .Values.nlbOperator.image.pullPolicy }}
         command:
         - /manager

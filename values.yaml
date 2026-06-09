@@ -170,7 +170,7 @@ nlbPoolOperator:
   image:
     registry: "registry.cn-hangzhou.aliyuncs.com"
     repository: chrisliu/nlb-pool-operator
-    tag: "v0.2.0"
+    tag: "v0.2.10-fix-releasing"
     pullPolicy: IfNotPresent
 
   # 资源限制
@@ -217,16 +217,13 @@ nlbPoolOperator:
 
   # 控制器配置
   controller:
-    # NLB API QPS 限制
-    nlbApiQps: "3.0"
-    # NLB API Burst 限制
-    nlbApiBurst: "5"
-    # 最大并发协调数
-    maxConcurrentReconciles: 100
-    # kube-apiserver 客户端 QPS 限制
-    kubeApiQps: 50
-    # kube-apiserver 客户端 Burst 限制
-    kubeApiBurst: 100
+    # kube-apiserver 客户端 QPS/Burst（大规模场景需提升）
+    kubeApiQps: 200
+    kubeApiBurst: 400
 
-  # 额外的配置
-  extraArgs: []
+  # 额外启动参数（二进制直接支持的 flag）
+  extraArgs:
+    - --add-servers-qps=30
+    - --remove-servers-qps=30
+    - --delete-listener-qps=0
+    - --delete-sg-qps=0

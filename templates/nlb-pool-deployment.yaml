@@ -29,15 +29,6 @@ spec:
         - /manager
         args:
         {{- if .Values.nlbPoolOperator.controller }}
-        {{- if .Values.nlbPoolOperator.controller.nlbApiQps }}
-        - --nlb-api-qps={{ .Values.nlbPoolOperator.controller.nlbApiQps }}
-        {{- end }}
-        {{- if .Values.nlbPoolOperator.controller.nlbApiBurst }}
-        - --nlb-api-burst={{ .Values.nlbPoolOperator.controller.nlbApiBurst }}
-        {{- end }}
-        {{- if .Values.nlbPoolOperator.controller.maxConcurrentReconciles }}
-        - --max-concurrent-reconciles={{ .Values.nlbPoolOperator.controller.maxConcurrentReconciles }}
-        {{- end }}
         {{- if .Values.nlbPoolOperator.controller.kubeApiQps }}
         - --kube-api-qps={{ .Values.nlbPoolOperator.controller.kubeApiQps }}
         {{- end }}

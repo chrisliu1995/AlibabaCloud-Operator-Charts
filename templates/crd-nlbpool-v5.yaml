@@ -76,6 +76,10 @@ spec:
                         type: string
                       protocol:
                         type: string
+                      containerPort:
+                        type: integer
+                        format: int32
+                        description: Container port that the backend server listens on
                 portRange:
                   type: object
                   properties:

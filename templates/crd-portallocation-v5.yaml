@@ -135,6 +135,11 @@ spec:
                         format: int32
                       phase:
                         type: string
+                registeredSGs:
+                  type: array
+                  items:
+                    type: string
+                  description: SG IDs that have been successfully registered with AddServer
                 sgsReady:
                   type: integer
                   format: int32

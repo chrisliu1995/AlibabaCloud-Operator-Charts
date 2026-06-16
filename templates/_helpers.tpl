@@ -150,3 +150,32 @@ Image registry
 {{- define "alibabacloud-operators.imageRegistry" -}}
 {{- .Values.global.imageRegistry }}
 {{- end }}
+
+{{/*
+Validate AccessKey credentials.
+Fails the install/upgrade with a clear message if AK/SK is empty, masked
+(contains '***'), or accidentally includes the 'access-key-id=' prefix
+from `aliyun configure get` output.
+*/}}
+{{- define "alibabacloud-operators.validateCredentials" -}}
+{{- $ak := .Values.global.alibabacloud.accessKeyId | toString -}}
+{{- $sk := .Values.global.alibabacloud.accessKeySecret | toString -}}
+{{- if not $ak -}}
+  {{- fail "\n\nERROR: global.alibabacloud.accessKeyId is required.\nPlease provide your plaintext AccessKey ID (typically starts with 'LTAI').\nSee README section '获取 AccessKey' for how to obtain it.\n" -}}
+{{- end -}}
+{{- if not $sk -}}
+  {{- fail "\n\nERROR: global.alibabacloud.accessKeySecret is required.\nPlease provide your plaintext AccessKey Secret (30 random characters).\nSee README section '获取 AccessKey' for how to obtain it.\n" -}}
+{{- end -}}
+{{- if contains "***" $ak -}}
+  {{- fail "\n\nERROR: accessKeyId looks masked (contains '***').\nYou likely used the output of `aliyun configure get access-key-id`, which is masked for security.\nThe correct way to obtain the plaintext AK:\n  - Read directly from ~/.aliyun/config.json (jq '.profiles[].access_key_id')\n  - Or copy from the Alibaba Cloud RAM console where the AccessKey was created.\nSee README section '获取 AccessKey' for details.\n" -}}
+{{- end -}}
+{{- if contains "***" $sk -}}
+  {{- fail "\n\nERROR: accessKeySecret looks masked (contains '***').\nSee accessKeyId error above.\n" -}}
+{{- end -}}
+{{- if hasPrefix "access-key-id=" $ak -}}
+  {{- fail "\n\nERROR: accessKeyId contains the literal prefix 'access-key-id='.\nYou likely passed the entire line of `aliyun configure get` output, which is in 'key=value' format.\nUse only the value after the '=' sign, e.g. 'LTAI...' not 'access-key-id=LTAI...'.\n" -}}
+{{- end -}}
+{{- if hasPrefix "access-key-secret=" $sk -}}
+  {{- fail "\n\nERROR: accessKeySecret contains the literal prefix 'access-key-secret='.\nSee accessKeyId error above.\n" -}}
+{{- end -}}
+{{- end -}}

@@ -36,6 +36,20 @@ spec:
         - --kube-api-burst={{ .Values.nlbPoolOperator.controller.kubeApiBurst }}
         {{- end }}
         {{- end }}
+        {{- with .Values.nlbPoolOperator.rateLimits }}
+        - --add-servers-qps={{ .addServers }}
+        - --remove-servers-qps={{ .removeServers }}
+        - --create-sg-qps={{ .createSg }}
+        - --create-listener-qps={{ .createListener }}
+        - --get-listener-qps={{ .getListener }}
+        - --delete-listener-qps={{ .deleteListener }}
+        - --delete-sg-qps={{ .deleteSg }}
+        - --list-listeners-by-port-qps={{ .listListenersByPort }}
+        - --list-server-group-servers-qps={{ .listServerGroupServers }}
+        - --list-listeners-qps={{ .listListeners }}
+        - --get-server-group-attribute-qps={{ .getServerGroupAttribute }}
+        - --get-job-status-qps={{ .getJobStatus }}
+        {{- end }}
         {{- range .Values.nlbPoolOperator.extraArgs }}
         - {{ . }}
         {{- end }}

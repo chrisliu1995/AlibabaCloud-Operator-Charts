@@ -10,6 +10,8 @@ components:
     enabled: false
   eip:
     enabled: true
+  nlbPool:
+    enabled: false
 
 eipOperator:
   replicaCount: 2

@@ -1,10 +1,10 @@
 # AlibabaCloud Operators Helm Chart
 
-这个 Helm Chart 用于在 Kubernetes 集群中安装和管理 AlibabaCloud NLB Operator 和 EIP Operator。
+这个 Helm Chart 用于在 Kubernetes 集群中一键安装 AlibabaCloud NLB Operator、EIP Operator 和 NLB Pool Operator。
 
 ## 功能特性
 
-- 🎯 **组件可选安装**：可以选择性安装 NLB Operator 和/或 EIP Operator
+- 🎯 **组件可选安装**：可以选择性安装 NLB Operator、EIP Operator 和 NLB Pool Operator
 - 🔄 **参数复用**：通用配置参数在多个组件间复用
 - 🔐 **安全凭证管理**：统一管理 AlibabaCloud 认证信息
 - ⚙️ **灵活配置**：支持自定义资源限制、副本数、环境变量等
@@ -13,16 +13,31 @@
 ## 组件说明
 
 ### NLB Operator
-负责管理阿里云网络负载均衡器（NLB）资源，自动为 Kubernetes Service 创建和配置 NLB。
+负责管理阿里云网络负载均衡器（NLB）资源 CRD（NLB / ServerGroup / Listener），将 K8s 自定义资源同步到阿里云。
 
 ### EIP Operator
-负责管理阿里云弹性公网 IP（EIP）资源，自动为 Kubernetes 资源分配和管理公网 IP。
+负责管理阿里云弹性公网 IP（EIP）资源 CRD，自动为 K8s 资源分配和管理公网 IP。
+
+### NLB Pool Operator
+基于上述两者之上，提供 NLB 资源池能力（NLBPool / PortAllocation CRD），支持端口预分配、Pod 绑定、网络隔离、批量回收等高阶场景。
+
+> **NLB Pool Operator 强依赖 NLB Operator**（创建 NLB CR），并推荐与 EIP Operator 同时启用。如果用户单独启用 `components.nlbPool.enabled=true` 但禁用 NLB Operator，Chart 不会校验，但运行时会失败。
 
 ## 前置要求
 
 - Kubernetes 1.19+
 - Helm 3.0+
 - 阿里云 AccessKey ID 和 Secret
+
+## 组件版本
+
+| 组件 | 镜像 | 版本 |
+|------|------|------|
+| NLB Operator | `registry.cn-hangzhou.aliyuncs.com/chrisliu/nlb-operator` | `v0.2.0` |
+| EIP Operator | `registry.cn-hangzhou.aliyuncs.com/chrisliu/eip-operator` | `v0.3.0` |
+| NLB Pool Operator | `registry.cn-hangzhou.aliyuncs.com/chrisliu/nlb-pool-operator` | `v0.1.1` |
+
+镜像仓库为公开匿名拉取，无需 imagePullSecret。
 
 ## 安装方法
 

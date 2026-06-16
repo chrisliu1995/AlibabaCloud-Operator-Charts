@@ -99,8 +99,9 @@ eipOperator:
   
   # 镜像配置
   image:
-    repository: chrisliu95/alibabacloud-eip-operator
-    tag: "v0.2.1"
+    registry: "registry.cn-hangzhou.aliyuncs.com"
+    repository: chrisliu/eip-operator
+    tag: "v0.3.0"
     pullPolicy: IfNotPresent
   
   # 资源限制
@@ -170,7 +171,7 @@ nlbPoolOperator:
   image:
     registry: "registry.cn-hangzhou.aliyuncs.com"
     repository: chrisliu/nlb-pool-operator
-    tag: "v0.2.10-fix-releasing"
+    tag: "v0.1.1"
     pullPolicy: IfNotPresent
 
   # 资源限制
@@ -221,9 +222,21 @@ nlbPoolOperator:
     kubeApiQps: 200
     kubeApiBurst: 400
 
-  # 额外启动参数（二进制直接支持的 flag）
-  extraArgs:
-    - --add-servers-qps=30
-    - --remove-servers-qps=30
-    - --delete-listener-qps=0
-    - --delete-sg-qps=0
+  # 阿里云 NLB API 限速 (QPS)，0 表示禁用本地限流
+  # 这些默认值是巨人场景测试通过的合理值，不建议设为 0（可能引发云端限流风暴）
+  rateLimits:
+    addServers: 30                 # AddServersToServerGroup
+    removeServers: 30              # RemoveServersFromServerGroup
+    createSg: 5                    # CreateServerGroup
+    createListener: 5              # CreateListener
+    getListener: 20                # GetListenerAttribute
+    deleteListener: 3              # DeleteListener
+    deleteSg: 3                    # DeleteServerGroup
+    listListenersByPort: 5         # ListListenersByPort
+    listServerGroupServers: 20     # ListServerGroupServers
+    listListeners: 20              # ListListeners
+    getServerGroupAttribute: 20    # GetServerGroupAttribute
+    getJobStatus: 20               # GetJobStatus
+
+  # 额外启动参数（除上述限流参数之外的 flag）
+  extraArgs: []

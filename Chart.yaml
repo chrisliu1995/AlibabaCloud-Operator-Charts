@@ -2,8 +2,8 @@ apiVersion: v2
 name: alibabacloud-operators
 description: A Helm chart for installing AlibabaCloud NLB, EIP and NLB Pool Operators
 type: application
-version: 0.2.2
-appVersion: "0.2.2"
+version: 0.2.3
+appVersion: "0.2.3"
 keywords:
   - alibabacloud
   - nlb
